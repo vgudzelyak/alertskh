@@ -1,0 +1,6 @@
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+#alertskh script
+0 * * * * cd /home/ec2-user/alertskh; ./ps_checker.sh
+5 0 * * 1 cd /home/ec2-user/alertskh; rm alertskh.log; touch alertskh.log
