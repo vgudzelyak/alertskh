@@ -1,6 +1,6 @@
 #!/bin/bash
 
-process=$(ps -A | grep python3)
+process=$(ps aux | grep '[a]lertskh/main.py')
 logfile="$(pwd)/alertskh.log"
 main="$(pwd)/main.py"
 
