@@ -35,6 +35,7 @@ async def main():
         except Exception as error:
             with open(log_file, 'a') as file:
                 file.write(f'\n{datetime.now()} {error}')
+                break
 
 client.start()
 client.loop.run_until_complete(main())
