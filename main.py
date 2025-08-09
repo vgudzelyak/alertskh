@@ -6,7 +6,7 @@ api_id = 'your_api_id'
 api_hash = 'your_api_hash'
 source_channel = 'air_alert_ua'
 alerts_channel = 'some_channel'
-region_name = 'Харківська'
+region_names = ['в Чугуївський район', 'в Харківська область']
 log_file = 'alertskh.log'
 message_id_file = 'sent_id.txt'
 
@@ -21,17 +21,18 @@ async def main():
                     sent_id = int(raw_value)
                 else:
                     sent_id = 0
-            messages = await client.get_messages(source_channel, limit=5, offset_id=0)
+            messages = await client.get_messages(source_channel, limit=10, offset_id=0)
             for message in messages:
-                if (datetime.now(timezone.utc) - datetime.strptime(str(message.date), '%Y-%m-%d %H:%M:%S+00:00').replace(tzinfo=timezone.utc)).seconds < 120:
-                    if region_name in message.message and sent_id != message.id:
-                        metadata = await client.get_entity(alerts_channel)
-                        await client.send_message(entity=metadata, message=message.message)
-                        with open(message_id_file, 'w') as file:
-                            file.write(str(message.id))
-                        with open(log_file, 'a') as file:
-                            file.write(f'\n{datetime.now()} {message.message}')
-            await sleep(60)
+                if (datetime.now(timezone.utc) - datetime.strptime(str(message.date), '%Y-%m-%d %H:%M:%S+00:00').replace(tzinfo=timezone.utc)).seconds < 60:
+                    for region in region_names:
+                        if region in message.message and sent_id != message.id:
+                            metadata = await client.get_entity(alerts_channel)
+                            await client.send_message(entity=metadata, message=message.message)
+                            with open(message_id_file, 'w') as file:
+                                file.write(str(message.id))
+                            with open(log_file, 'a') as file:
+                                file.write(f'\n{datetime.now()} {message.message}')
+            await sleep(30)
         except Exception as error:
             with open(log_file, 'a') as file:
                 file.write(f'\n{datetime.now()} {error}')
